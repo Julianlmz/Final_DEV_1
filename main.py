@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="sigmotoa FC")
+app = FastAPI(title="Sigmotoa FC")
 
 
 @app.get("/")

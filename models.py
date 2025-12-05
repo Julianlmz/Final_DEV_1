@@ -40,6 +40,9 @@ class Jugador(JugadorBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     estaditicas: List["Estadistica"] = Relationship(back_populates="jugadores", link_model=JugadorEstadistica)
 
+class JugadorCreate(JugadorBase):
+    pass
+
 class Estadistica():
     pass
 

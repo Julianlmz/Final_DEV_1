@@ -43,6 +43,18 @@ class Jugador(JugadorBase, table=True):
 class JugadorCreate(JugadorBase):
     pass
 
+class JugadorUpdate(SQLModel):
+    name: str | None = Field(description="Nombre Jugador")
+    numero: int | None = Field(description="Numero de Camiseta")
+    nacionalidad: str | None = Field(description="Nacionalidad del Jugador")
+    estatura: int | None = Field(description="Estatura del Jugador")
+    peso: int | None = Field(description="Peso del Jugador en Kg")
+    pie_dominante: PieDominante
+    estado: Estados
+
+class JugadorRead(JugadorBase):
+    pass
+
 class Estadistica():
     pass
 

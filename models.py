@@ -10,11 +10,15 @@ class PieDominante(str,Enum):
     Diestro = "Diestro"
 
 class Posicion(str,Enum):
-    DefensaLateral = "Defensa Lateral"
-    DefensaCentral = "Defensa Central"
-    VolanteDefensivo = "Volante Defensivo"
-    Extremo = "Extremo"
-    Delantero = "Delantero"
+    ARQUERO = "ARQUERO"
+    DEFENSA_C= "DEFENSA CENTRAL"
+    DEFENSA_L = "DEFENSA LATERAL"
+    VOLANTE_D = "VOLANTE DEFENSIVO"
+    VOLANTE_O = "VOLANTE OFENSIVO"
+    VOLANTE_C = "VOLANTE CENTRAL"
+    VOLANTE_E = "VOLANTE EXTREMO"
+    DELANTERO_C = "DELANTERO CENTRAL"
+    DELANTERO_P = "DELANTERO PUNTA"
 
 class JugadorBase(SQLModel):
     name: str | None = Field(description="Nombre Jugador")

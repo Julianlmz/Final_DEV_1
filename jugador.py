@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from database import SessionDep
-from models import Jugador, JugadorCreate, JugadorRead, JugadorUpdate, JugadorBase
+from models import Jugador, JugadorCreate, JugadorUpdate, JugadorBase, Estados
 from typing import List
 from sqlmodel import select
 
@@ -14,31 +14,35 @@ async def create_jugador(new_jugador: JugadorCreate, session: SessionDep):
     await session.refresh(jugador)
     return jugador
 
-@router.get("/", response_model=List[JugadorRead])
-def read_jugadores(session: SessionDep):
-    jugadores = session.exec(select(Jugador)).all()
-    return jugadores
+@router.get("/", response_model=List[Jugador])
+def read_jugadores(estado: Estados = Query(default=None), session: SessionDep = None):
+    query = select(Jugador)
+    if estado:
+        query = query.where(Jugador.estado == estado)
+    empleados = session.exec(query).all()
+    return empleados
 
-@router.get("/{juagdor_id}", response_model=JugadorRead)
+@router.get("/{juagdor_id}", response_model=Jugador)
 def read_jugador(session: SessionDep, jugador_id: int):
     jugador = session.get(Jugador, jugador_id)
     if not jugador:
         raise HTTPException(status_code=404, detail="Jugador no encontrado")
     return jugador
 
-@router.patch("/{jugador_id}", response_model=JugadorRead)
-def update_jugador(session: SessionDep, jugador_id: int, jugador_update: JugadorBase):
-    db_jugador = session.get(Jugador, jugador_id)
-    if not db_jugador:
-        raise HTTPException(status_code=404, detail="Jugador no encontrado")
-
-    jugador_data = jugador_update.model_dump(exclude_unset=True)
-    db_jugador.sqlmodel_update(jugador_data)
-
-    session.add(db_jugador)
+@router.patch("/{jugador_id}", response_model=Jugador)
+def update_jugador(jugador_id: int, jugador_update: JugadorCreate, session: SessionDep):
+    jugador = session.get(Jugador, jugador_id)
+    if not jugador:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    jugador.nombre = jugador_update.nombre
+    jugador.numero = jugador_update.numero
+    jugador.fecha_nacimiento = jugador_update.fecha_nacimiento
+    jugador.nacionalidad = jugador_update.nacionalidad
+    jugador.altura = jugador_update.altura
+    jugador.peso = jugador_update.peso
     session.commit()
-    session.refresh(db_jugador)
-    return db_jugador
+    session.refresh(jugador)
+    return jugador
 
 @router.delete("/jugador_id}")
 def delete_jugador(session: SessionDep, jugador_id: int):

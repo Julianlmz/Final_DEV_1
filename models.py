@@ -1,9 +1,11 @@
 from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
 
-class Estado(str,Enum):
-    Activo = "Activo"
-    Inactivo = "Inactivo"
+class Estados(str, Enum):
+    ACTIVO = "ACTIVO"
+    INACTIVO = "INACTIVO"
+    LESIONADO= "LESIONADO"
+    AMONESTADO= "AMONESTADO"
 
 class PieDominante(str,Enum):
     Zurdo = "Zurdo"
@@ -27,7 +29,7 @@ class JugadorBase(SQLModel):
     estatura: int | None = Field(description="Estatura del Jugador")
     peso: int | None = Field(description="Peso del Jugador en Kg")
     pie_dominante: PieDominante
-    estado: Estado
+    estado: Estados
 
 class Jugador(JugadorBase, table=True):
     id: int | None = Field(default=None, primary_key=True)

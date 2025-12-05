@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
-from typing import List
+from typing import List, Optional
+from datetime import date
 
 class Estados(str, Enum):
     ACTIVO = "ACTIVO"
@@ -23,43 +24,55 @@ class Posicion(str,Enum):
     DELANTERO_C = "DELANTERO CENTRAL"
     DELANTERO_P = "DELANTERO PUNTA"
 
-class JugadorEstadistica(SQLModel, table=True):
-    jugador_id: int = Field(foreign_key="jugador.id", primary_key=True)
-    estadistica_id: int = Field(foreign_key="estadistica.id", primary_key=True)
+class PartidoBase(SQLModel): 
+    fecha: date 
+    rival: str 
+    goles: int 
+    golesrival: int 
+    resultado: str 
+    estadisticas: List["Estadistica"] = Relationship(back_populates="partido")
 
-class JugadorBase(SQLModel):
-    name: str | None = Field(description="Nombre Jugador")
-    numero: int | None = Field(description="Numero de Camiseta")
-    nacionalidad: str | None = Field(description="Nacionalidad del Jugador")
-    estatura: int | None = Field(description="Estatura del Jugador")
-    peso: int | None = Field(description="Peso del Jugador en Kg")
+class Partido(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True) 
+
+def determinar_resultado(self):
+    if self.goles > self.golesrival:
+        self.resultado = "Victoria"
+    elif self.goles < self.golesrival:
+        self.resultado = "Derrota"
+    else:
+        self.resultado = "Empate"
+
+class EstadisticaBase(SQLModel): 
+    jugador_id: int = Field(foreign_key="jugador.id") 
+    partido_id: int = Field(foreign_key="partido.id") 
+    minutos_jugados: int 
+    goles: int 
+    tarjetas: int 
+    jugador: "Jugador" = Relationship(back_populates="estadisticas") 
+    partido: "Partido" = Relationship(back_populates="estadisticas")
+
+class Estadistica(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True) 
+
+class JugadorBase(SQLModel): 
+    nombre: str 
+    numero: int = Field(ge=1, le=99, unique=True) 
+    fecha_nacimiento: date 
+    nacionalidad: str 
+    altura: float 
+    peso: float 
     pie_dominante: PieDominante
-    estado: Estados
+    posicion: Posicion
+    estado: Estados = Field(default=Estados.ACTIVO) 
+    estadisticas: List[EstadisticaBase] = Relationship(back_populates="jugador")
 
-class Jugador(JugadorBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    estaditicas: List["Estadistica"] = Relationship(back_populates="jugadores", link_model=JugadorEstadistica)
+class Jugador(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True) 
 
 class JugadorCreate(JugadorBase):
     pass
 
-class JugadorUpdate(SQLModel):
-    name: str | None = Field(description="Nombre Jugador")
-    numero: int | None = Field(description="Numero de Camiseta")
-    nacionalidad: str | None = Field(description="Nacionalidad del Jugador")
-    estatura: int | None = Field(description="Estatura del Jugador")
-    peso: int | None = Field(description="Peso del Jugador en Kg")
-    pie_dominante: PieDominante
-    estado: Estados
-
-class JugadorRead(JugadorBase):
+class JugadorUpdate(JugadorBase):
     pass
-
-class Estadistica():
-    pass
-
-
-class Partido():
-    pass
-
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from database import SessionDep
-from models import Jugador, JugadorCreate, JugadorRead, JugadorUpate, JugadorBase
+from models import Jugador, JugadorCreate, JugadorRead, JugadorUpdate, JugadorBase
 from typing import List
 from sqlmodel import select
 

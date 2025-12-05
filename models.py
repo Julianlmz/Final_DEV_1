@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
+from typing import List
 
 class Estados(str, Enum):
     ACTIVO = "ACTIVO"
@@ -22,6 +23,10 @@ class Posicion(str,Enum):
     DELANTERO_C = "DELANTERO CENTRAL"
     DELANTERO_P = "DELANTERO PUNTA"
 
+class JugadorEstadistica(SQLModel, table=True):
+    jugador_id: int = Field(foreign_key="jugador.id", primary_key=True)
+    estadistica_id: int = Field(foreign_key="estadistica.id", primary_key=True)
+
 class JugadorBase(SQLModel):
     name: str | None = Field(description="Nombre Jugador")
     numero: int | None = Field(description="Numero de Camiseta")
@@ -33,6 +38,7 @@ class JugadorBase(SQLModel):
 
 class Jugador(JugadorBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    estaditicas: List["Estadistica"] = Relationship(back_populates="jugadores", link_model=JugadorEstadistica)
 
 class Estadistica():
     pass
